@@ -1,3 +1,6 @@
 [submodule "stm32-usbd"]
 	path = stm32-usbd
 	url = https://github.com/Disasm/stm32-usbd.git
+[submodule "usb-device"]
+	path = usb-device
+	url = https://github.com/mvirkkunen/usb-device.git
