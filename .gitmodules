@@ -1,0 +1,3 @@
+[submodule "stm32-usbd"]
+	path = stm32-usbd
+	url = https://github.com/Disasm/stm32-usbd.git
