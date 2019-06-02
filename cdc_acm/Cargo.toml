@@ -1,0 +1,8 @@
+[package]
+name = "cdc_acm"
+version = "0.1.0"
+authors = ["Vadim Kaushan <admin@disasm.info>"]
+edition = "2018"
+
+[dependencies]
+usb-device = "0.2.0"

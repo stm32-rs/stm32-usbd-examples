@@ -1,0 +1,11 @@
+[workspace]
+
+members = [
+    "example-stm32f103c8",
+    "stm32-usbd",
+    "cdc_acm",
+]
+
+[patch.crates-io]
+stm32-usbd = { path = "stm32-usbd" }
+cdc_acm = { path = "cdc_acm" }

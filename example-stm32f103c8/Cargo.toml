@@ -1,0 +1,13 @@
+[package]
+name = "example-stm32f103c8"
+version = "0.1.0"
+authors = ["Vadim Kaushan <admin@disasm.info>"]
+edition = "2018"
+
+[dependencies]
+cortex-m-rt = "0.6.7"
+stm32f1xx-hal = { version = "0.3", features = ["rt"] }
+panic-semihosting = "0.5.2"
+usb-device = "0.2.0"
+cdc_acm = "0.1.0"
+stm32-usbd = { version = "0.1.0", features = ["stm32f103xx"] }
