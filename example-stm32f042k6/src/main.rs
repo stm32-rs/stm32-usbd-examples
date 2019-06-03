@@ -5,7 +5,7 @@
 extern crate panic_semihosting;
 
 use cortex_m_rt::entry;
-use stm32_usbd::{ResetPin, UsbBus};
+use stm32_usbd::UsbBus;
 use stm32f0xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
 
@@ -28,13 +28,10 @@ fn main() -> ! {
     let clocks = dp
         .RCC
         .configure()
-        // .use_hse(8.mhz())
         .hsi48()
         .sysclk(48.mhz())
         .pclk(24.mhz())
         .freeze(&mut dp.FLASH);
-
-    // assert!(clocks.usbclk_valid());
 
     enable_crs();
 
