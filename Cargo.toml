@@ -2,6 +2,7 @@
 
 members = [
     "example-stm32f103c8",
+    "example-stm32f303vc",
     "stm32-usbd",
     "usb-device",
     "cdc_acm",
