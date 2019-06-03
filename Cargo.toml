@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    "example-stm32f042k6",
     "example-stm32f103c8",
     "example-stm32f303vc",
     "stm32-usbd",
