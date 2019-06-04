@@ -1,5 +1,5 @@
 [workspace]
-
+default-members = []
 members = [
     "example-stm32f042k6",
     "example-stm32f103c8",
