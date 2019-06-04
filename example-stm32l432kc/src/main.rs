@@ -20,6 +20,17 @@ fn enable_crs() {
     crs.cr.modify(|_, w| w.cen().set_bit());
 }
 
+/// Enables VddUSB power supply
+fn enable_usb_pwr() {
+    // Enable PWR peripheral
+    let rcc = unsafe { &(*stm32::RCC::ptr()) };
+    rcc.apb1enr1.modify(|_, w| w.pwren().set_bit());
+
+    // Enable VddUSB
+    let pwr = unsafe { &*stm32::PWR::ptr() };
+    pwr.cr2.modify(|_, w| w.usv().set_bit());
+}
+
 #[entry]
 fn main() -> ! {
     let dp = stm32::Peripherals::take().unwrap();
@@ -27,7 +38,7 @@ fn main() -> ! {
     let mut flash = dp.FLASH.constrain();
     let mut rcc = dp.RCC.constrain();
 
-    let clocks = rcc
+    let _clocks = rcc
         .cfgr
         .hsi48(true)
         .sysclk(48.mhz())
@@ -40,11 +51,10 @@ fn main() -> ! {
     let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
 
     // let _usb_dm = gpioa.pa11.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
-    let usb_dp = gpioa.pa12.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
+    let _usb_dp = gpioa.pa12.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
 
     // disable Vddusb power isolation
-    let pwr = dp.PWR.constrain(&mut rcc.apb1r1); // turns it on
-    //pwr.enable_usb();
+    enable_usb_pwr();
 
     let usb_bus = UsbBus::usb(dp.USB);
 
