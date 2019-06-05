@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPO=$(realpath $(dirname $(readlink -f $0))/..)
+REPO=$(dirname $(readlink -f $0))/..
 cd "$REPO"
 
 set -euxo pipefail
