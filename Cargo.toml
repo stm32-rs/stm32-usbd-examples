@@ -5,12 +5,10 @@ members = [
     "example-stm32f103c8",
     "example-stm32f303vc",
     "example-stm32l432kc",
-    "stm32-usbd",
     "usb-device",
     "cdc_acm",
 ]
 
 [patch.crates-io]
-stm32-usbd = { path = "stm32-usbd" }
 usb-device = { path = "usb-device" }
 cdc_acm = { path = "cdc_acm" }
