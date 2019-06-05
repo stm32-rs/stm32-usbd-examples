@@ -11,3 +11,7 @@ panic-semihosting = "0.5"
 usb-device = "0.2"
 cdc_acm = "0.1"
 stm32-usbd = { version = "0.1", features = ["stm32l4x2xx"] }
+
+[patch.crates-io]
+usb-device = { path = "../usb-device" }
+cdc_acm = { path = "../cdc_acm" }
