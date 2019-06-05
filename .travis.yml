@@ -1,0 +1,13 @@
+language: rust
+
+rust:
+  - nightly
+  - stable
+
+cache: cargo
+
+install:
+  - ci/install.sh
+
+script:
+  - ci/script.sh

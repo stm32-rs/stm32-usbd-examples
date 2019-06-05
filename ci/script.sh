@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+REPO=$(realpath $(dirname $(readlink -f $0))/..)
+cd "$REPO"
+
+set -euxo pipefail
+
+for pkg in $(ls -d example-*); do
+    cd "$REPO/$pkg"
+    cargo build --release
+done
