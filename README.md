@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Disasm/stm32-usbd-examples.svg?branch=master)](https://travis-ci.org/Disasm/stm32-usbd-examples)
+
 # `stm32-usbd-examples`
 
 > A collection of examples for [`stm32-usbd`](https://github.com/Disasm/stm32-usbd).
