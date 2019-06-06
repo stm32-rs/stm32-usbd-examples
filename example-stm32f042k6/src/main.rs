@@ -9,17 +9,6 @@ use stm32_usbd::UsbBus;
 use stm32f0xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
 
-fn enable_crs() {
-    let rcc = unsafe { &(*stm32::RCC::ptr()) };
-    rcc.apb1enr.modify(|_, w| w.crsen().set_bit());
-    let crs = unsafe { &(*stm32::CRS::ptr()) };
-    // Initialize clock recovery
-    // Set autotrim enabled.
-    crs.cr.modify(|_, w| w.autotrimen().set_bit());
-    // Enable CR
-    crs.cr.modify(|_, w| w.cen().set_bit());
-}
-
 #[entry]
 fn main() -> ! {
     let mut dp = stm32::Peripherals::take().unwrap();
@@ -29,11 +18,10 @@ fn main() -> ! {
         .RCC
         .configure()
         .hsi48()
+        .enable_crs(dp.CRS)
         .sysclk(48.mhz())
         .pclk(24.mhz())
         .freeze(&mut dp.FLASH);
-
-    enable_crs();
 
     let usb_bus = UsbBus::usb(dp.USB);
 
