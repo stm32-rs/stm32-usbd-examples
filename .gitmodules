@@ -1,3 +1,0 @@
-[submodule "usb-device"]
-	path = usb-device
-	url = https://github.com/mvirkkunen/usb-device.git
