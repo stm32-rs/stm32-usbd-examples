@@ -4,12 +4,15 @@
 
 extern crate panic_semihosting;
 
+use core::mem;
+use cortex_m::asm::delay;
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
 use stm32f3xx_hal::{prelude::*, stm32};
+use stm32f3xx_hal::gpio::{AF14, gpioa::{PA11, PA12}};
 use usb_device::prelude::*;
 
-fn configure_usb_gpio() {
+fn configure_usb_gpio<DM, DP>(usb_dm: PA11<DM>, usb_dp: PA12<DP>) -> (PA11<AF14>, PA12<AF14>) {
     let moder = unsafe { &(*stm32::GPIOA::ptr()).moder };
     let afrh = unsafe { &(*stm32::GPIOA::ptr()).afrh };
 
@@ -31,6 +34,13 @@ fn configure_usb_gpio() {
         v = (v & !(0b1111 << offset12)) | (af << offset12);
         w.bits(v)
     });
+
+    unsafe {
+        (
+            mem::transmute(usb_dm),
+            mem::transmute(usb_dp),
+        )
+    }
 }
 
 fn configure_usb_clock() {
@@ -45,7 +55,7 @@ fn main() -> ! {
     let mut flash = dp.FLASH.constrain();
     let mut rcc = dp.RCC.constrain();
 
-    let _clocks = rcc
+    let clocks = rcc
         .cfgr
         .sysclk(48.mhz())
         .pclk1(24.mhz())
@@ -54,15 +64,21 @@ fn main() -> ! {
 
     // assert!(clocks.usbclk_valid());
 
-    let gpioa = dp.GPIOA.split(&mut rcc.ahb);
+    let mut gpioa = dp.GPIOA.split(&mut rcc.ahb);
 
-    configure_usb_gpio();
-    let _usb_dm = gpioa.pa11;
-    let _usb_dp = gpioa.pa12;
+    // F3 Discovery board has a pull-up resistor on the D+ line.
+    // Pull the D+ pin down to send a RESET condition to the USB bus.
+    let mut usb_dp = gpioa.pa12.into_push_pull_output(&mut gpioa.moder, &mut gpioa.otyper);
+    usb_dp.set_low();
+    delay(clocks.sysclk().0 / 100);
+
+    // TODO: fix this
+    let usb_dm = gpioa.pa11;
+    let (usb_dm, usb_dp) = configure_usb_gpio(usb_dm, usb_dp);
 
     configure_usb_clock();
 
-    let usb_bus = UsbBus::usb(dp.USB_FS);
+    let usb_bus = UsbBus::new(dp.USB_FS, (usb_dm, usb_dp));
 
     let mut serial = cdc_acm::SerialPort::new(&usb_bus);
 
@@ -72,8 +88,6 @@ fn main() -> ! {
         .serial_number("TEST")
         .device_class(cdc_acm::USB_CLASS_CDC)
         .build();
-
-    usb_dev.force_reset().expect("reset failed");
 
     loop {
         if !usb_dev.poll(&mut [&mut serial]) {

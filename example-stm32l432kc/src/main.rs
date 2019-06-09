@@ -48,15 +48,15 @@ fn main() -> ! {
 
     enable_crs();
 
-    let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
-
-    // let _usb_dm = gpioa.pa11.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
-    let _usb_dp = gpioa.pa12.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
-
     // disable Vddusb power isolation
     enable_usb_pwr();
 
-    let usb_bus = UsbBus::usb(dp.USB);
+    let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
+
+    let usb_dm = gpioa.pa11.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
+    let usb_dp = gpioa.pa12.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
+
+    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
 
     let mut serial = cdc_acm::SerialPort::new(&usb_bus);
 
@@ -66,8 +66,6 @@ fn main() -> ! {
         .serial_number("TEST")
         .device_class(cdc_acm::USB_CLASS_CDC)
         .build();
-
-    usb_dev.force_reset().expect("reset failed");
 
     loop {
         if !usb_dev.poll(&mut [&mut serial]) {

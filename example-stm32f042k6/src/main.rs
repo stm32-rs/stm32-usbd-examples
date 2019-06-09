@@ -13,8 +13,7 @@ use usb_device::prelude::*;
 fn main() -> ! {
     let mut dp = stm32::Peripherals::take().unwrap();
 
-    //let mut flash = dp.FLASH.constrain();
-    let clocks = dp
+    let mut rcc = dp
         .RCC
         .configure()
         .hsi48()
@@ -23,7 +22,12 @@ fn main() -> ! {
         .pclk(24.mhz())
         .freeze(&mut dp.FLASH);
 
-    let usb_bus = UsbBus::usb(dp.USB);
+    let gpioa = dp.GPIOA.split(&mut rcc);
+
+    let usb_dm = gpioa.pa11;
+    let usb_dp = gpioa.pa12;
+
+    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
 
     let mut serial = cdc_acm::SerialPort::new(&usb_bus);
 
@@ -33,8 +37,6 @@ fn main() -> ! {
         .serial_number("TEST")
         .device_class(cdc_acm::USB_CLASS_CDC)
         .build();
-
-    usb_dev.force_reset().expect("reset failed");
 
     loop {
         if !usb_dev.poll(&mut [&mut serial]) {

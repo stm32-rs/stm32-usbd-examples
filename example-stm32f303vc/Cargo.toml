@@ -5,12 +5,13 @@ authors = ["Vadim Kaushan <admin@disasm.info>"]
 edition = "2018"
 
 [dependencies]
+cortex-m = "0.6"
 cortex-m-rt = "0.6"
 stm32f3xx-hal = { version = "0.1.4", features = ["rt", "stm32f303"] }
 panic-semihosting = "0.5"
 usb-device = "0.2.1"
 cdc_acm = "0.1"
-stm32-usbd = { version = "0.1", features = ["stm32f303xc"] }
+stm32-usbd = { version = "0.2", features = ["stm32f303xc"] }
 
 [patch.crates-io]
 cdc_acm = { path = "../cdc_acm" }
