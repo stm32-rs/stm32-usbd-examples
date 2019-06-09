@@ -1,12 +1,12 @@
-[![Build Status](https://travis-ci.org/Disasm/stm32-usbd-examples.svg?branch=master)](https://travis-ci.org/Disasm/stm32-usbd-examples)
+[![Build Status](https://travis-ci.org/stm32-rs/stm32-usbd-examples.svg?branch=master)](https://travis-ci.org/stm32-rs/stm32-usbd-examples)
 
 # `stm32-usbd-examples`
 
-> A collection of examples for [`stm32-usbd`](https://github.com/Disasm/stm32-usbd).
+> A collection of examples for [`stm32-usbd`](https://github.com/stm32-rs/stm32-usbd).
 
 ## Cloning the repository
 
-    git clone --recursive https://github.com/Disasm/stm32-usbd-examples
+    git clone --recursive https://github.com/stm32-rs/stm32-usbd-examples
     cd stm32-usbd-examples
 
 ## Supported targets
