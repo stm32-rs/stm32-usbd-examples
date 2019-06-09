@@ -15,7 +15,7 @@
 
     rustup target add thumbv7m-none-eabi
     cd example-stm32f103c8
-    # [programmer-specific setup goes here]
+    openocd -f openocd.cfg &
     cargo run --release
 
 ### STM32F303VC ([STM32F3DISCOVERY](https://www.st.com/en/evaluation-tools/stm32f3discovery.html) board)
