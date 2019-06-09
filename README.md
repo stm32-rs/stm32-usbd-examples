@@ -18,6 +18,13 @@
     # [programmer-specific setup goes here]
     cargo run --release
 
+### STM32F303VC ([STM32F3DISCOVERY](https://www.st.com/en/evaluation-tools/stm32f3discovery.html) board)
+
+    rustup target add thumbv7em-none-eabihf
+    cd example-stm32f303vc
+    openocd -f board/stm32f3discovery.cfg &
+    cargo run --release
+
 ### STM32F042K6 ([NUCLEO-F042K6](https://www.st.com/en/evaluation-tools/nucleo-f042k6.html) board)
 
     rustup target add thumbv6m-none-eabi
