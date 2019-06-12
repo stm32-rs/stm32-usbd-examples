@@ -4,44 +4,12 @@
 
 extern crate panic_semihosting;
 
-use core::mem;
 use cortex_m::asm::delay;
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
 use stm32f3xx_hal::{prelude::*, stm32};
-use stm32f3xx_hal::gpio::{AF14, gpioa::{PA11, PA12}};
 use usb_device::prelude::*;
 
-fn configure_usb_gpio<DM, DP>(usb_dm: PA11<DM>, usb_dp: PA12<DP>) -> (PA11<AF14>, PA12<AF14>) {
-    let moder = unsafe { &(*stm32::GPIOA::ptr()).moder };
-    let afrh = unsafe { &(*stm32::GPIOA::ptr()).afrh };
-
-    let mode = 0b10; // alternate function mode
-    moder.modify(|r, w| unsafe {
-        let offset11 = 2 * 11;
-        let offset12 = 2 * 12;
-        let mut v = r.bits();
-        v = (v & !(0b11 << offset11)) | (mode << offset11);
-        v = (v & !(0b11 << offset12)) | (mode << offset12);
-        w.bits(v)
-    });
-    let af = 14;
-    afrh.modify(|r, w| unsafe {
-        let offset11 = 4 * (11 % 8);
-        let offset12 = 4 * (12 % 8);
-        let mut v = r.bits();
-        v = (v & !(0b1111 << offset11)) | (af << offset11);
-        v = (v & !(0b1111 << offset12)) | (af << offset12);
-        w.bits(v)
-    });
-
-    unsafe {
-        (
-            mem::transmute(usb_dm),
-            mem::transmute(usb_dp),
-        )
-    }
-}
 
 fn configure_usb_clock() {
     let rcc = unsafe { &*stm32::RCC::ptr() };
@@ -72,9 +40,8 @@ fn main() -> ! {
     usb_dp.set_low();
     delay(clocks.sysclk().0 / 100);
 
-    // TODO: fix this
-    let usb_dm = gpioa.pa11;
-    let (usb_dm, usb_dp) = configure_usb_gpio(usb_dm, usb_dp);
+    let usb_dm = gpioa.pa11.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
+    let usb_dp = usb_dp.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
 
     configure_usb_clock();
 
