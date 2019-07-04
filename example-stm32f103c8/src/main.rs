@@ -9,6 +9,7 @@ use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
 use stm32f1xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
+use cdc_acm::{SerialPort, USB_CLASS_CDC};
 
 #[entry]
 fn main() -> ! {
@@ -39,13 +40,13 @@ fn main() -> ! {
 
     let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
 
-    let mut serial = cdc_acm::SerialPort::new(&usb_bus);
+    let mut serial = SerialPort::new(&usb_bus);
 
     let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x5824, 0x27dd))
         .manufacturer("Fake company")
         .product("Serial port")
         .serial_number("TEST")
-        .device_class(cdc_acm::USB_CLASS_CDC)
+        .device_class(USB_CLASS_CDC)
         .build();
 
     loop {
