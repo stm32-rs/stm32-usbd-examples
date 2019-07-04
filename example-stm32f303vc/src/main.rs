@@ -73,7 +73,15 @@ fn main() -> ! {
                     }
                 }
 
-                serial.write(&buf[0..count]).ok();
+                let mut write_offset = 0;
+                while write_offset < count {
+                    match serial.write(&buf[write_offset..count]) {
+                        Ok(len) if len > 0 => {
+                            write_offset += len;
+                        },
+                        _ => {},
+                    }
+                }
             }
             _ => {}
         }
