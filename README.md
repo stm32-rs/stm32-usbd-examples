@@ -32,6 +32,13 @@
     openocd -f openocd.cfg &
     cargo run --release
 
+### STM32F072RB ([32F072BDISCOVERY](https://www.st.com/en/evaluation-tools/32f072bdiscovery.html) board)
+
+    rustup target add thumbv6m-none-eabi
+    cd example-stm32f072rb
+    openocd -f openocd.cfg &
+    cargo run --release
+
 ### STM32F432KC ([NUCLEO-L432KC](https://www.st.com/en/evaluation-tools/nucleo-l432kc.html) board)
 
     rustup target add thumbv7em-none-eabihf
