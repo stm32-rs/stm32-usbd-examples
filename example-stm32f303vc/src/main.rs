@@ -7,14 +7,14 @@ extern crate panic_semihosting;
 use cortex_m::asm::delay;
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
-use stm32f3xx_hal::{prelude::*, stm32};
+use stm32f3xx_hal::{prelude::*, stm32, hal::digital::v2::OutputPin};
 use usb_device::prelude::*;
 use cdc_acm::{SerialPort, USB_CLASS_CDC};
 
 
 fn configure_usb_clock() {
     let rcc = unsafe { &*stm32::RCC::ptr() };
-    rcc.cfgr.modify(|_, w| w.usbpres().set_bit());
+    rcc.cfgr.modify(|_, w| w.usbpre().set_bit());
 }
 
 #[entry]
@@ -51,7 +51,7 @@ fn main() -> ! {
 
     configure_usb_clock();
 
-    let usb_bus = UsbBus::new(dp.USB_FS, (usb_dm, usb_dp));
+    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
 
     let mut serial = SerialPort::new(&usb_bus);
 
