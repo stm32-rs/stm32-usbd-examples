@@ -9,7 +9,7 @@ use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
 use stm32f1xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
-use cdc_acm::{SerialPort, USB_CLASS_CDC};
+use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 #[entry]
 fn main() -> ! {

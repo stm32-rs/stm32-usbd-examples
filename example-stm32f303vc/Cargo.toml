@@ -10,8 +10,8 @@ cortex-m-rt = "0.6"
 stm32f3xx-hal = { version = "0.2.3", features = ["rt", "stm32f303"] }
 panic-semihosting = "0.5"
 usb-device = "0.2.1"
-cdc_acm = "0.1"
+usbd-serial = "0.1"
 stm32-usbd = { version = "0.3.0", features = ["stm32f303xc"] }
 
 [patch.crates-io]
-cdc_acm = { path = "../cdc_acm" }
+usbd-serial = { path = "../usbd-serial" }
