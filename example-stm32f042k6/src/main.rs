@@ -23,6 +23,13 @@ fn main() -> ! {
         .pclk(24.mhz())
         .freeze(&mut dp.FLASH);
 
+    // Configure the on-board LED (LD3, green)
+    let gpiob = dp.GPIOB.split(&mut rcc);
+    let mut led = cortex_m::interrupt::free(|cs| {
+        gpiob.pb3.into_push_pull_output(cs)
+    });
+    led.set_low(); // Turn off
+
     let gpioa = dp.GPIOA.split(&mut rcc);
 
     let usb_dm = gpioa.pa11;
@@ -48,6 +55,8 @@ fn main() -> ! {
 
         match serial.read(&mut buf) {
             Ok(count) if count > 0 => {
+                led.set_high(); // Turn on
+
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
                     if 0x61 <= *c && *c <= 0x7a {
@@ -67,5 +76,7 @@ fn main() -> ! {
             }
             _ => {}
         }
+
+        led.set_low(); // Turn off
     }
 }

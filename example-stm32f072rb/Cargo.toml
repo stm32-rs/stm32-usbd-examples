@@ -5,6 +5,7 @@ authors = ["Vadim Kaushan <admin@disasm.info>"]
 edition = "2018"
 
 [dependencies]
+cortex-m = "0.6"
 cortex-m-rt = "0.6"
 stm32f0xx-hal = { version = "0.14.1", features = ["rt", "stm32f072"] }
 panic-semihosting = "0.5"

@@ -33,6 +33,11 @@ fn main() -> ! {
 
     // assert!(clocks.usbclk_valid());
 
+    // Configure the on-board LED (LD10, south red)
+    let mut gpioe = dp.GPIOE.split(&mut rcc.ahb);
+    let mut led = gpioe.pe13.into_push_pull_output(&mut gpioe.moder, &mut gpioe.otyper);
+    led.set_low(); // Turn off
+
     let mut gpioa = dp.GPIOA.split(&mut rcc.ahb);
 
     // F3 Discovery board has a pull-up resistor on the D+ line.
@@ -66,6 +71,8 @@ fn main() -> ! {
 
         match serial.read(&mut buf) {
             Ok(count) if count > 0 => {
+                led.set_high(); // Turn on
+
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
                     if 0x61 <= *c && *c <= 0x7a {
@@ -85,5 +92,7 @@ fn main() -> ! {
             }
             _ => {}
         }
+
+        led.set_low(); // Turn off
     }
 }

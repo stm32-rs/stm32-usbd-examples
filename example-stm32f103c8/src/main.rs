@@ -27,6 +27,11 @@ fn main() -> ! {
 
     assert!(clocks.usbclk_valid());
 
+    // Configure the on-board LED (PC13, green)
+    let mut gpioc = dp.GPIOC.split(&mut rcc.apb2);
+    let mut led = gpioc.pc13.into_push_pull_output(&mut gpioc.crh);
+    led.set_high(); // Turn off
+
     let mut gpioa = dp.GPIOA.split(&mut rcc.apb2);
 
     // BluePill board has a pull-up resistor on the D+ line.
@@ -58,6 +63,8 @@ fn main() -> ! {
 
         match serial.read(&mut buf) {
             Ok(count) if count > 0 => {
+                led.set_low(); // Turn on
+
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
                     if 0x61 <= *c && *c <= 0x7a {
@@ -77,5 +84,7 @@ fn main() -> ! {
             }
             _ => {}
         }
+
+        led.set_high(); // Turn off
     }
 }

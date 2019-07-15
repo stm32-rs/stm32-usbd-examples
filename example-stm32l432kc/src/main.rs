@@ -52,6 +52,11 @@ fn main() -> ! {
     // disable Vddusb power isolation
     enable_usb_pwr();
 
+    // Configure the on-board LED (LD3, green)
+    let mut gpiob = dp.GPIOB.split(&mut rcc.ahb2);
+    let mut led = gpiob.pb3.into_push_pull_output(&mut gpiob.moder, &mut gpiob.otyper);
+    led.set_low(); // Turn off
+
     let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
 
     let usb_dm = gpioa.pa11.into_af10(&mut gpioa.moder, &mut gpioa.afrh);
@@ -77,6 +82,8 @@ fn main() -> ! {
 
         match serial.read(&mut buf) {
             Ok(count) if count > 0 => {
+                led.set_high(); // Turn on
+
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
                     if 0x61 <= *c && *c <= 0x7a {
@@ -96,5 +103,7 @@ fn main() -> ! {
             }
             _ => {}
         }
+
+        led.set_low(); // Turn off
     }
 }
