@@ -46,16 +46,14 @@ impl<B: UsbBus> SerialPort<'_, B> {
     }
 
     pub fn write(&mut self, data: &[u8]) -> Result<usize> {
-        if self.need_zlp {
-            return Ok(0);
-        }
-
-        if data.len() == 64 {
-            self.need_zlp = true;
-        }
-
         match self.write_ep.write(data) {
-            Ok(count) => Ok(count),
+            Ok(count) => {
+                if data.len() == 64 {
+                    self.need_zlp = true;
+                }
+
+                Ok(count)
+            },
             Err(UsbError::WouldBlock) => Ok(0),
             e => e,
         }
@@ -123,8 +121,9 @@ impl<B: UsbBus> UsbClass<B> for SerialPort<'_, B> {
 
     fn endpoint_in_complete(&mut self, addr: EndpointAddress) {
         if self.need_zlp && addr == self.write_ep.address() {
-            self.need_zlp = false;
-            self.write_ep.write(&[]).ok();
+            if let Ok(_) = self.write_ep.write(&[]) {
+                self.need_zlp = false;
+            }
         }
     }
 
