@@ -1,3 +1,0 @@
-[submodule "usbd-serial"]
-	path = usbd-serial
-	url = https://github.com/mvirkkunen/usbd-serial.git
