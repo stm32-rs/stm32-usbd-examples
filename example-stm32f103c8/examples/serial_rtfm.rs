@@ -51,7 +51,7 @@ const APP: () = {
         let serial = SerialPort::new(USB_BUS.as_ref().unwrap());
 
         let usb_dev =
-            UsbDeviceBuilder::new(USB_BUS.as_ref().unwrap(), UsbVidPid(0x5824, 0x27dd))
+            UsbDeviceBuilder::new(USB_BUS.as_ref().unwrap(), UsbVidPid(0x16c0, 0x27dd))
                 .manufacturer("Fake company")
                 .product("Serial port")
                 .serial_number("TEST")
