@@ -39,7 +39,7 @@
     openocd -f openocd.cfg &
     cargo run --release
 
-### STM32F432KC ([NUCLEO-L432KC](https://www.st.com/en/evaluation-tools/nucleo-l432kc.html) board)
+### STM32L432KC ([NUCLEO-L432KC](https://www.st.com/en/evaluation-tools/nucleo-l432kc.html) board)
 
     rustup target add thumbv7em-none-eabihf
     cd example-stm32l432kc
