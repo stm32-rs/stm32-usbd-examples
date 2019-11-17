@@ -12,6 +12,7 @@ use stm32f1xx_hal::{prelude::*, stm32};
 use stm32_usbd::{UsbBus, UsbBusType};
 use usb_device::{bus::UsbBusAllocator, prelude::*};
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
+use embedded_hal::digital::v2::OutputPin;
 
 static mut USB_BUS: Option<UsbBusAllocator<UsbBusType>> = None;
 static mut USB_SERIAL: Option<usbd_serial::SerialPort<UsbBusType>> = None;

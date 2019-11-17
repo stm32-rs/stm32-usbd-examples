@@ -6,8 +6,8 @@ edition = "2018"
 
 [dependencies]
 cortex-m-rt = "0.6"
-stm32l4xx-hal = { version = "0.4", features = ["rt", "stm32l4x2"] }
+stm32l4xx-hal = { version = "0.5", features = ["rt", "stm32l4x2"] }
 panic-semihosting = "0.5"
 usb-device = "0.2.1"
 usbd-serial = "0.1"
-stm32-usbd = { version = "0.3.0", features = ["stm32l4x2xx"] }
+stm32-usbd = { version = "0.4.0", features = ["stm32l4x2xx"] }

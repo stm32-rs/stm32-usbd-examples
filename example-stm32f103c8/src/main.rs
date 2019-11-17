@@ -10,6 +10,7 @@ use stm32_usbd::UsbBus;
 use stm32f1xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
+use embedded_hal::digital::v2::OutputPin;
 
 #[entry]
 fn main() -> ! {

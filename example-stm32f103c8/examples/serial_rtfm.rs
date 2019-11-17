@@ -13,6 +13,7 @@ use stm32_usbd::{UsbBus, UsbBusType};
 use usb_device::bus;
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
+use embedded_hal::digital::v2::OutputPin;
 
 #[app(device = stm32f1xx_hal::stm32)]
 const APP: () = {

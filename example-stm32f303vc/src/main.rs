@@ -12,11 +12,6 @@ use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 
-fn configure_usb_clock() {
-    let rcc = unsafe { &*stm32::RCC::ptr() };
-    rcc.cfgr.modify(|_, w| w.usbpre().set_bit());
-}
-
 #[entry]
 fn main() -> ! {
     let dp = stm32::Peripherals::take().unwrap();
@@ -26,12 +21,13 @@ fn main() -> ! {
 
     let clocks = rcc
         .cfgr
+        .use_hse(8.mhz())
         .sysclk(48.mhz())
         .pclk1(24.mhz())
         .pclk2(24.mhz())
         .freeze(&mut flash.acr);
 
-    // assert!(clocks.usbclk_valid());
+    assert!(clocks.usbclk_valid());
 
     // Configure the on-board LED (LD10, south red)
     let mut gpioe = dp.GPIOE.split(&mut rcc.ahb);
@@ -48,8 +44,6 @@ fn main() -> ! {
 
     let usb_dm = gpioa.pa11.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
     let usb_dp = usb_dp.into_af14(&mut gpioa.moder, &mut gpioa.afrh);
-
-    configure_usb_clock();
 
     let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
 
