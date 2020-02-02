@@ -6,11 +6,11 @@ extern crate panic_semihosting;
 
 use cortex_m::asm::delay;
 use cortex_m_rt::entry;
-use stm32_usbd::UsbBus;
+use embedded_hal::digital::v2::OutputPin;
+use stm32f1xx_hal::usb::{Peripheral, UsbBus};
 use stm32f1xx_hal::{prelude::*, stm32};
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
-use embedded_hal::digital::v2::OutputPin;
 
 #[entry]
 fn main() -> ! {
@@ -31,20 +31,24 @@ fn main() -> ! {
     // Configure the on-board LED (PC13, green)
     let mut gpioc = dp.GPIOC.split(&mut rcc.apb2);
     let mut led = gpioc.pc13.into_push_pull_output(&mut gpioc.crh);
-    led.set_high(); // Turn off
+    led.set_high().ok(); // Turn off
 
     let mut gpioa = dp.GPIOA.split(&mut rcc.apb2);
 
     // BluePill board has a pull-up resistor on the D+ line.
     // Pull the D+ pin down to send a RESET condition to the USB bus.
+    // This forced reset is needed only for development, without it host
+    // will not reset your device when you upload new firmware.
     let mut usb_dp = gpioa.pa12.into_push_pull_output(&mut gpioa.crh);
-    usb_dp.set_low();
+    usb_dp.set_low().ok();
     delay(clocks.sysclk().0 / 100);
 
-    let usb_dm = gpioa.pa11;
-    let usb_dp = usb_dp.into_floating_input(&mut gpioa.crh);
-
-    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
+    let usb = Peripheral {
+        usb: dp.USB,
+        pin_dm: gpioa.pa11,
+        pin_dp: usb_dp.into_floating_input(&mut gpioa.crh),
+    };
+    let usb_bus = UsbBus::new(usb);
 
     let mut serial = SerialPort::new(&usb_bus);
 
@@ -64,7 +68,7 @@ fn main() -> ! {
 
         match serial.read(&mut buf) {
             Ok(count) if count > 0 => {
-                led.set_low(); // Turn on
+                led.set_low().ok(); // Turn on
 
                 // Echo back in upper case
                 for c in buf[0..count].iter_mut() {
@@ -78,14 +82,14 @@ fn main() -> ! {
                     match serial.write(&buf[write_offset..count]) {
                         Ok(len) if len > 0 => {
                             write_offset += len;
-                        },
-                        _ => {},
+                        }
+                        _ => {}
                     }
                 }
             }
             _ => {}
         }
 
-        led.set_high(); // Turn off
+        led.set_high().ok(); // Turn off
     }
 }

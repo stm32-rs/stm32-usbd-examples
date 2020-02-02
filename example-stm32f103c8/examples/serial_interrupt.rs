@@ -6,13 +6,12 @@ extern crate panic_semihosting;
 
 use cortex_m::asm::{delay, wfi};
 use cortex_m_rt::entry;
+use embedded_hal::digital::v2::OutputPin;
 use stm32f1xx_hal::stm32::{interrupt, Interrupt};
+use stm32f1xx_hal::usb::{Peripheral, UsbBus, UsbBusType};
 use stm32f1xx_hal::{prelude::*, stm32};
-
-use stm32_usbd::{UsbBus, UsbBusType};
 use usb_device::{bus::UsbBusAllocator, prelude::*};
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
-use embedded_hal::digital::v2::OutputPin;
 
 static mut USB_BUS: Option<UsbBusAllocator<UsbBusType>> = None;
 static mut USB_SERIAL: Option<usbd_serial::SerialPort<UsbBusType>> = None;
@@ -39,6 +38,8 @@ fn main() -> ! {
 
     // BluePill board has a pull-up resistor on the D+ line.
     // Pull the D+ pin down to send a RESET condition to the USB bus.
+    // This forced reset is needed only for development, without it host
+    // will not reset your device when you upload new firmware.
     let mut usb_dp = gpioa.pa12.into_push_pull_output(&mut gpioa.crh);
     usb_dp.set_low();
     delay(clocks.sysclk().0 / 100);
@@ -46,21 +47,26 @@ fn main() -> ! {
     let usb_dm = gpioa.pa11;
     let usb_dp = usb_dp.into_floating_input(&mut gpioa.crh);
 
+    let usb = Peripheral {
+        usb: dp.USB,
+        pin_dm: usb_dm,
+        pin_dp: usb_dp,
+    };
+
     // Unsafe to allow access to static variables
     unsafe {
-        let bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
+        let bus = UsbBus::new(usb);
 
         USB_BUS = Some(bus);
 
         USB_SERIAL = Some(SerialPort::new(USB_BUS.as_ref().unwrap()));
 
-        let usb_dev =
-            UsbDeviceBuilder::new(USB_BUS.as_ref().unwrap(), UsbVidPid(0x16c0, 0x27dd))
-                .manufacturer("Fake company")
-                .product("Serial port")
-                .serial_number("TEST")
-                .device_class(USB_CLASS_CDC)
-                .build();
+        let usb_dev = UsbDeviceBuilder::new(USB_BUS.as_ref().unwrap(), UsbVidPid(0x16c0, 0x27dd))
+            .manufacturer("Fake company")
+            .product("Serial port")
+            .serial_number("TEST")
+            .device_class(USB_CLASS_CDC)
+            .build();
 
         USB_DEVICE = Some(usb_dev);
     }
