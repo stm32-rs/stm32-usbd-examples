@@ -1,7 +1,7 @@
 [package]
 name = "example-stm32f103c8"
 version = "0.1.0"
-authors = ["Vadim Kaushan <admin@disasm.info>"]
+authors = ["Vadim Kaushan <admin@disasm.info>", "Matti Virkkunen <mvirkkunen@gmail.com>"]
 edition = "2018"
 
 [dependencies]
@@ -11,6 +11,7 @@ stm32f1xx-hal = { version = "0.5", features = ["stm32f103", "stm32-usbd", "rt"] 
 panic-semihosting = "0.5"
 usb-device = "0.2.4"
 usbd-serial = "0.1"
+usbd-webusb = "1.0.0"
 embedded-hal = "0.2.3"
 
 [dev-dependencies]

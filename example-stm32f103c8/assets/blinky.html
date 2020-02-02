@@ -1,0 +1,44 @@
+<title>Web Blinky</title>
+<body>
+  <div id="not-connected">
+    Not connected.
+    <button type="button" id="connect">Click to connect</button>
+  </div>
+  <div id="connected" style="display: none;">
+    Connected! <button type="button" id="toggle">Toggle the LED</button>
+  </div>
+  <script>
+    let device = null, on = false;
+
+    function setConnected(connected) {
+        document.getElementById("connected").style.display = connected ? "block" : "none";
+        document.getElementById("not-connected").style.display = connected ? "none" : "block";
+    }
+
+    document.getElementById("connect").onclick = async () => {
+        device = await navigator.usb.requestDevice({
+            filters: [{
+                vendorId: 0x16c0,
+                productId: 0x27d8,
+            }]
+        });
+
+        await device.open();
+        await device.selectConfiguration(1);
+
+        setConnected(true);
+    };
+
+    document.getElementById("toggle").onclick = async () => {
+        on = !on;
+
+        await device.controlTransferOut({
+            requestType: "vendor",
+            recipient: "device",
+            request: 1,
+            value: on ? 1 : 0,
+            index: 0
+        });
+    }
+  </script>
+</body>
