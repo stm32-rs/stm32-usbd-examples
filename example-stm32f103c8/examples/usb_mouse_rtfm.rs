@@ -62,6 +62,14 @@ pub mod hid {
         0xc0, // END_COLLECTION
     ];
 
+    pub fn report(x: i8, y: i8) -> [u8; 3] {
+        [
+            0x00,    // button: none
+            x as u8, // x-axis
+            y as u8, // y-axis
+        ]
+    }
+
     pub struct HIDClass<'a, B: UsbBus> {
         report_if: InterfaceNumber,
         report_ep: EndpointIn<'a, B>,
@@ -160,12 +168,7 @@ pub mod hid {
                 REQ_GET_REPORT => {
                     // USB host requests for report
                     // I'm not sure what should we do here, so just send empty report
-                    xfer.accept_with(&[
-                        0x00, // button: none
-                        0x00, // x-axis: no movement
-                        0x00, // y-axis: no movement
-                    ])
-                    .ok();
+                    xfer.accept_with(&report(0, 0)).ok();
                 }
                 _ => {
                     xfer.reject().ok();
@@ -280,18 +283,10 @@ const APP: () = {
         // move mouse cursor horizontally (x-axis) while blinking LED
         if *counter < P / 2 {
             led.set_high().ok();
-            hid.write(&[
-                0x00, // button: none
-                0x10, // x-axis: +10 unit
-                0x00, // y-axis: no movement
-            ]);
+            hid.write(&hid::report(10, 0));
         } else {
             led.set_low().ok();
-            hid.write(&[
-                0x00, // button: none
-                0xef, // x-axis: -10 unit
-                0x00, // y-axis: none
-            ]);
+            hid.write(&hid::report(-10, 0));
         }
     }
 
