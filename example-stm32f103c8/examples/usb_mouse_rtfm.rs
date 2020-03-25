@@ -158,7 +158,14 @@ pub mod hid {
 
             match req.request {
                 REQ_GET_REPORT => {
-                    xfer.accept_with(&[0x00, 0x01, 0x00]).ok();
+                    // USB host requests for report
+                    // I'm not sure what should we do here, so just send empty report
+                    xfer.accept_with(&[
+                        0x00, // button: none
+                        0x00, // x-axis: no movement
+                        0x00, // y-axis: no movement
+                    ])
+                    .ok();
                 }
                 _ => {
                     xfer.reject().ok();
