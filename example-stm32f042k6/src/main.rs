@@ -6,7 +6,7 @@ extern crate panic_semihosting;
 
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
-use stm32f0xx_hal::{prelude::*, stm32};
+use stm32f0xx_hal::{prelude::*, stm32, usb::Peripheral};
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
@@ -39,10 +39,13 @@ fn main() -> ! {
 
     let gpioa = dp.GPIOA.split(&mut rcc);
 
-    let usb_dm = gpioa.pa11;
-    let usb_dp = gpioa.pa12;
+    let usb = Peripheral {
+        usb: dp.USB,
+        pin_dm: gpioa.pa11,
+        pin_dp: gpioa.pa12,
+    };
 
-    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
+    let usb_bus = UsbBus::new(usb);
 
     let mut serial = SerialPort::new(&usb_bus);
 
