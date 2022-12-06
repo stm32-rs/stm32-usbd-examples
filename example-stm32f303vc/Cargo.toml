@@ -1,13 +1,13 @@
 [package]
 name = "example-stm32f303vc"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Vadim Kaushan <admin@disasm.info>"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-cortex-m = "0.6"
-cortex-m-rt = "0.6"
-stm32f3xx-hal = { version = "0.4", features = ["stm32f303xc", "stm32-usbd", "rt"] }
-panic-semihosting = "0.5"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+stm32f3xx-hal = { version = "0.9", features = ["stm32f303xc", "stm32-usbd", "rt"] }
+panic-semihosting = "0.6"
 usb-device = "0.2.4"
 usbd-serial = "0.1"
