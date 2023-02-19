@@ -5,10 +5,10 @@ authors = ["Vadim Kaushan <admin@disasm.info>"]
 edition = "2018"
 
 [dependencies]
-cortex-m = "0.6"
-cortex-m-rt = "0.6"
-stm32f0xx-hal = { version = "0.15.2", features = ["rt", "stm32f072"] }
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+stm32f0xx-hal = { version = "0.18", features = ["rt", "stm32f072", "stm32-usbd"] }
 panic-semihosting = "0.5"
-usb-device = "0.2.1"
+usb-device = "0.2.9"
 usbd-serial = "0.1"
-stm32-usbd = { version = "0.4.0", features = ["stm32f072xx"] }
+stm32-usbd = { version = "0.6.0" }
