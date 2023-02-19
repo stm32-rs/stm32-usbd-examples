@@ -6,13 +6,13 @@ extern crate panic_semihosting;
 
 use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
-use stm32f0xx_hal::{prelude::*, stm32};
+use stm32f0xx_hal::{pac, prelude::*, usb::Peripheral};
 use usb_device::prelude::*;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 #[entry]
 fn main() -> ! {
-    let mut dp = stm32::Peripherals::take().unwrap();
+    let mut dp = pac::Peripherals::take().unwrap();
 
     let mut rcc = dp
         .RCC
@@ -25,9 +25,7 @@ fn main() -> ! {
 
     // Configure the on-board LED (LD6, blue)
     let gpioc = dp.GPIOC.split(&mut rcc);
-    let mut led = cortex_m::interrupt::free(|cs| {
-        gpioc.pc7.into_push_pull_output(cs)
-    });
+    let mut led = cortex_m::interrupt::free(|cs| gpioc.pc7.into_push_pull_output(cs));
     led.set_low(); // Turn off
 
     let gpioa = dp.GPIOA.split(&mut rcc);
@@ -35,7 +33,12 @@ fn main() -> ! {
     let usb_dm = gpioa.pa11;
     let usb_dp = gpioa.pa12;
 
-    let usb_bus = UsbBus::new(dp.USB, (usb_dm, usb_dp));
+    let p = Peripheral {
+        usb: dp.USB,
+        pin_dm: usb_dm,
+        pin_dp: usb_dp,
+    };
+    let usb_bus = UsbBus::new(p);
 
     let mut serial = SerialPort::new(&usb_bus);
 
@@ -69,8 +72,8 @@ fn main() -> ! {
                     match serial.write(&buf[write_offset..count]) {
                         Ok(len) if len > 0 => {
                             write_offset += len;
-                        },
-                        _ => {},
+                        }
+                        _ => {}
                     }
                 }
             }
